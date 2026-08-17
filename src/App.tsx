@@ -1,4 +1,5 @@
 import "./index.css";
+import {Feed} from "@/components/Feed.tsx";
 import {BrowserRouter, Routes, Route} from "react-router-dom";
 import Sidebar from "./components/Sidebar.tsx";
 import FeedPage from "./pages/FeedPage.tsx";
@@ -10,10 +11,9 @@ export function App() {
     }
   return (
       <BrowserRouter>
-          <div style={{ display: "flex", width: "100vw"}}>
+          <div className="flex justify-center items-center bg-black">
               <Sidebar onNewPost={handleNewPost} />
-              <main style={{ flex: "50%", flexGrow: 0 }}>
-              </main>
+              <Feed/>
           </div>
       </BrowserRouter>
   );
