@@ -10,7 +10,7 @@ const navItems = [
     { label: "Explore", path: "/explore"}
 ];
 
-function Sidebar({ onNewPost }: SidebarProps) {
+function Sidebar({onNewPost}: {onNewPost?: () => void }) {
     const location = useLocation();
 
     return (
