@@ -5,8 +5,9 @@ export function AppRoutes() {
     return (
         <Routes>
             <Route path="/" element={<FeedPage />} />
+            <Route path="/explore" element={<FeedPage/>}/>
         </Routes>
     );
 }
 
-export default FeedPage;
+export default AppRoutes;

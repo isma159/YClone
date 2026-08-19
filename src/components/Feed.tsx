@@ -2,13 +2,16 @@ import {MessageCircle, ThumbsUp, Trash, User} from "lucide-react";
 import type {Post} from "@/types/post.ts";
 
 
-export function Feed() {
+export function Feed({posts}: {posts: Post[]}) {
 
     const tempPost: Post = {name: "John Doe", handle: "@johndoe123", content: "hello", timePosted: Date.now(), likes: 102, comments: []}
     const tempPost2: Post = {name: "Jane Doe", handle: "@janedoe123", content: "hi", timePosted: Date.now(), likes: 103, comments: []}
 
     return (
-        <div className="flex flex-col w-5/10 h-screen bg-black border-2 border-gray-800 divide-y-2 divide-gray-800 overflow-y-auto">
+        <div className="flex flex-col w-full h-screen bg-black border-2 border-gray-800 divide-y-2 divide-gray-800 overflow-y-auto">
+            {posts.map((post, index) =>(
+                <Post key={index} post={post}/>
+            ))}
             <Post post={tempPost}/>
             <Post post={tempPost2}/>
             <div></div>

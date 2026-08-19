@@ -2,8 +2,9 @@ import "./index.css";
 import {Feed} from "@/components/Feed.tsx";
 import {BrowserRouter, Routes, Route} from "react-router-dom";
 import Sidebar from "./components/Sidebar.tsx";
+import SearchBar from "./components/SearchBar";
 import FeedPage from "./pages/FeedPage.tsx";
-import {createRoot} from "react-dom/client";
+import AppRoutes from "@/router";
 
 export function App() {
     const handleNewPost = () => {
@@ -11,9 +12,10 @@ export function App() {
     }
   return (
       <BrowserRouter>
-          <div className="flex justify-center items-center bg-black">
+          <div className="flex w-full h-screen bg-black">
               <Sidebar onNewPost={handleNewPost} />
-              <Feed/>
+              <AppRoutes />
+              <div className="w-1/4"/>
           </div>
       </BrowserRouter>
   );

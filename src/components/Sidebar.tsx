@@ -1,59 +1,39 @@
 import { Link, useLocation } from "react-router-dom";
 import YLogoWhiteResized from "../Assets/YLogoWhiteResized.png"
-import {Home, Search} from "lucide-react";
+import {Home, Icon, Search} from "lucide-react";
+
+
 interface SidebarProps {
-    onNewPost: () => void;
+    onNewPost?: () => void;
 }
 
 const navItems = [
-    { label: "Home", path: "/" },
-    { label: "Explore", path: "/explore"}
+    { label: "Home", path: "/", icon: Home },
+    { label: "Explore", path: "/explore", icon: Search },
 ];
 
-function Sidebar({onNewPost}: {onNewPost?: () => void }) {
+function Sidebar({ onNewPost }: SidebarProps) {
     const location = useLocation();
 
     return (
-        <aside
-            style={{
-                width: "25%",
-                height: "100vh",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                padding: "16px",
-                borderRight: "1px solid #2f3336",
-                boxSizing: "border-box",
-                background: "black",
-            }}
-        >
-            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-                <div style={{ fontSize: "24px", fontWeight: "bold", padding: "8px", color: "white"}}>
-                    <img src={YLogoWhiteResized} alt="YLogoWhite" />
-                </div>
+        <aside className="w-1/4 h-screen flex flex-col justify-between p-4 box-border border-r border-[#2f3336] bg-black">
+            <div className="flex flex-col gap-6">
+                <Link to="/" className="p-2 block w-fit">
+                    <img src={YLogoWhiteResized} alt="YLogoWhite" className="w-8" />
+                </Link>
 
-                <nav style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                    {navItems.map((item) => {
-                        const isActive = location.pathname === item.path;
+                <nav className="flex flex-col gap-1">
+                    {navItems.map(({label, path, icon: Icon}) => {
+                        const isActive = location.pathname === path;
                         return (
                             <Link
-                                key={item.path}
-                                to={item.path}
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "16px",
-                                    padding: "12px",
-                                    borderRadius: "9999px",
-                                    fontSize: "20px",
-                                    textDecoration: "none",
-                                    color: "white",
-                                    fontWeight: isActive ? "bold" : "normal",
-                                    backgroundColor: isActive ? "#1a1a1a" : "transparent",
-                                }}
+                                key={path}
+                                to={path}
+                                className={`flex items-center gap-4 p-3 rounded-full text-xl no-underline text-white transition-all hover:bg-[#181818] hover:scale-105 ${
+                                    isActive ? "font-bold bg-[#1a1a1a]" : "font-normal bg-transparent"
+                                }`}
                             >
-                                {item.label === "Home" ? <Home/> : item.label === "Explore" ? <Search/> : ""}
-                                {item.label}
+                                <Icon/> {label}
                             </Link>
                         );
                     })}
@@ -61,16 +41,7 @@ function Sidebar({onNewPost}: {onNewPost?: () => void }) {
 
                 <button
                     onClick={onNewPost}
-                    style={{
-                        backgroundColor: "white",
-                        color: "black",
-                        fontWeight: "bold",
-                        fontSize: "17px",
-                        border: "none",
-                        borderRadius: "9999px",
-                        padding: "12px 24px",
-                        cursor: "pointer",
-                    }}
+                    className="bg-white text-black font-bold text-[17px] border-none rounded-full py-3 px-6 cursor-pointer transition-all hover:bg-[#e6e6e6] hover:scale-105"
                 >
                     Post
                 </button>
