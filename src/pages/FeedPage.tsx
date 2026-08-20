@@ -4,10 +4,9 @@ import { Feed } from "@/components/Feed";
 import SearchBar from "@/components/SearchBar";
 import type { Post } from "@/types/post";
 
-const mockPosts: Post[] = [
-    { name: "John Doe", handle: "@johndoe123", content: "hello", timePosted: Date.now(), likes: 102, comments: [] },
-    { name: "Jane Doe", handle: "@janedoe123", content: "hi", timePosted: Date.now(), likes: 103, comments: [] },
-];
+interface FeedPageProps {
+    posts: Post[];
+}
 
 const trending = [
     {tag:"GTA6", posts:"67k posts"},
@@ -16,37 +15,22 @@ const trending = [
     {tag:"Bratwurst", posts:"12.2k posts"},
     {tag:"Tung Tung", posts:"6.5k posts"}
 ]
-function FeedPage() {
+function FeedPage({posts, onDeletePost}: FeedPageProps) {
     const location = useLocation();
     const isExploreMode = location.pathname === "/explore";
-
-    const [posts, setPosts] = useState<Post[]>([]);
     const [query, setQuery] = useState("");
 
-    useEffect(() => {
-        if (!isExploreMode) {
-            setPosts(mockPosts); // just show the mock feed for now
-        } else {
-            setPosts([]);
-        }
-    }, [isExploreMode]);
+    const handleSearch = (query: string) => {setQuery(query);
 
-    const handleSearch = (query: string) => {
-        setQuery(query);
+    const searchedPosts = posts.filter((post) =>
+        post.body.toLowerCase().includes(query.toLowerCase()) ||
+    post.title.toLowerCase().includes(query.toLowerCase()));
 
-        if (query.trim() === "") {
-            setPosts([]);
-            return;
-        }
-        const results = mockPosts.filter((p) =>
-            p.content.toLowerCase().includes(query.toLowerCase())
-        );
-        setPosts(results);
     };
 
     if (!isExploreMode) {
         return (
-            <div className="flex w-1/2"><Feed posts={posts}/></div>
+            <div className="flex w-1/2"><Feed posts={posts} onDeletePost={onDeletePost}/></div>
         )
     }
 
@@ -55,7 +39,6 @@ function FeedPage() {
                 <div className="p-4">
                     <SearchBar onSearch={handleSearch} />
                 </div>
-
 
             {isExploreMode && query.trim() === "" && (
                 <div className="px-4">
@@ -83,7 +66,7 @@ function FeedPage() {
                     <p className="text-gray-500 mb-2">
                         {posts.length} results for "{query}"
                     </p>
-                    <Feed posts={posts} />
+                    <Feed posts={posts} onDeletePost={onDeletePost} />
                 </div>
             )}
         </div>

@@ -1,16 +1,11 @@
-export interface Post {
-    name: string,
-    handle: string,
-    content: string,
-    timePosted: number
-    likes: number
-    comments: Comment[]
+export interface NewPost {
+    title: string;
+    body: string;
+    userId: number;
 }
-
-export interface Comment {
-    name: string,
-    handle: string,
-    content: string,
-    timePosted: number,
-    likes: number
+export interface Post {
+    id: number;
+    title: string;
+    body: string;
+    userId: number;
 }
