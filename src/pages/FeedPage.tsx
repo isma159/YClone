@@ -2,42 +2,60 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Feed } from "@/components/Feed";
 import SearchBar from "@/components/SearchBar";
-import type { Post } from "@/types/post";
-
-interface FeedPageProps {
-    posts: Post[];
-}
+import type {ExtendedPost, Post, Posts, Users} from "@/types/post";
+import {getAllPosts, getAllUsers} from "@/api/posts.ts";
+import {PostView} from "../components/PostView.tsx";
 
 const trending = [
     {tag:"GTA6", posts:"67k posts"},
-    {tag:"Anus", posts:"42.3k posts"},
-    {tag:"Cock", posts:"20.6k posts"},
     {tag:"Bratwurst", posts:"12.2k posts"},
     {tag:"Tung Tung", posts:"6.5k posts"}
 ]
-function FeedPage({posts, onDeletePost}: FeedPageProps) {
+function FeedPage({onDeletePost}) {
     const location = useLocation();
     const isExploreMode = location.pathname === "/explore";
-    const [query, setQuery] = useState("");
 
-    const handleSearch = (query: string) => {setQuery(query);
+    const [posts, setPosts] = useState<Posts>();
+    const [selectedPost, setSelectedPost] = useState<ExtendedPost | null>();
+    const [filteredPosts, setFilteredPosts] = useState<Posts>();
+    const [query, setQuery] = useState<string>("");
+    const [users, setUsers] = useState<Users>()
 
-    const searchedPosts = posts.filter((post) =>
-        post.body.toLowerCase().includes(query.toLowerCase()) ||
-    post.title.toLowerCase().includes(query.toLowerCase()));
+    useEffect(() => {
+        getAllUsers().then(res => setUsers(res));
+        if (!isExploreMode) {
+            getAllPosts().then(res => {setPosts(res)});
+        }
+    }, [isExploreMode]);
 
+
+    const handleSearch = (query: string) => {
+        setQuery(query);
+
+        if (query.trim() === "") {
+            setFilteredPosts(posts)
+            return;
+        }
+        if (posts) {
+            const results = posts.posts.filter((p) =>
+                p.body.toLowerCase().includes(query.toLowerCase())
+            );
+
+            const newPosts: Posts = {posts: results, total: posts.total, skip: posts.skip, limit: posts.limit}
+            setFilteredPosts(newPosts);
+        }
     };
 
-    if (!isExploreMode) {
+    if (!isExploreMode && posts && users) {
         return (
-            <div className="flex w-1/2"><Feed posts={posts} onDeletePost={onDeletePost}/></div>
+            <div className="flex w-1/2">{selectedPost ? <PostView selectedPost={selectedPost} onDeletePost={onDeletePost} setSelectedPost={setSelectedPost}/> : <Feed posts={posts} users={users} setSelectedPost={setSelectedPost}/>}</div>
         )
     }
 
     return (
         <div className="flex flex-col w-1/2">
                 <div className="p-4">
-                    <SearchBar onSearch={handleSearch} />
+                    <SearchBar onSearch={handleSearch}/>
                 </div>
 
             {isExploreMode && query.trim() === "" && (
@@ -61,12 +79,12 @@ function FeedPage({posts, onDeletePost}: FeedPageProps) {
                 </div>
             )}
 
-            {isExploreMode && query.trim() !== "" && (
+            {isExploreMode && query.trim() !== "" && filteredPosts && users && (
                 <div className="px-4">
                     <p className="text-gray-500 mb-2">
-                        {posts.length} results for "{query}"
+                        {posts?.total} results for "{query}"
                     </p>
-                    <Feed posts={posts} onDeletePost={onDeletePost} />
+                    {selectedPost ? <PostView selectedPost={selectedPost} setSelectedPost={setSelectedPost}/> : <Feed posts={filteredPosts} users={users} setSelectedPost={setSelectedPost} onDeletePost={onDeletePost} />}
                 </div>
             )}
         </div>
