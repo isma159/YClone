@@ -1,11 +1,11 @@
 import {useState} from 'react';
 import {X} from "lucide-react";
 import type {SubmitEvent} from "react";
-import type {NewPost} from "../types/post";
+import type {NewPost, Reactions} from "../types/post";
 
 interface NewPostFormProps {
     onClose: () => void;
-    onSubmit: (post: { body: string; userId: number }) => void | Promise<void>;
+    onSubmit: (post: { body: string; userId: number; reactions: Reactions }) => void | Promise<void>;
 }
 
 export function NewPostForm({onClose, onSubmit}: NewPostFormProps) {
@@ -19,6 +19,7 @@ export function NewPostForm({onClose, onSubmit}: NewPostFormProps) {
         await onSubmit({
             body: body.trim(),
             userId: 1,
+            reactions: {likes: 0}
         });
         onClose();
     };
@@ -29,16 +30,17 @@ export function NewPostForm({onClose, onSubmit}: NewPostFormProps) {
             <form
                 onClick={(event) => event.stopPropagation()}
                 onSubmit={handleSubmit}
-                className="w-full max-w-xl h-fit bg-black text-white border border-gray-800">
+                className="w-full max-w-xl h-fit bg-black rounded-2xl text-white border border-gray-800">
                 <div className="flex items-center justify-between border-b border-gray-800 p-4">
                     <button
                         type="button"
-                        onClick={onClose}
+                        onClick={(e) => {e.stopPropagation(); onClose}}
                         className="p-2 rounded-full hover:bg-gray-900 cursor-pointer hover:scale-110">
                         <X size={20}/>
                     </button>
                     <button
                         type="submit"
+                        onClick={(e) => {e.stopPropagation()}}
                         disabled={!body.trim()}
                         className="rounded-full bg-white px-5 py-2 font-bold text-black disabled:opacity-50 cursor-pointer hover:scale-105" >
                         Post

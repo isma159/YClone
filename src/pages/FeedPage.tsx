@@ -3,15 +3,18 @@ import { useLocation } from "react-router-dom";
 import { Feed } from "@/components/Feed";
 import SearchBar from "@/components/SearchBar";
 import type {ExtendedPost, Post, Posts, Users} from "@/types/post";
-import {getAllPosts, getAllUsers} from "@/api/posts.ts";
+import {createPost, deletePost, getAllPosts, getAllUsers} from "@/api/posts.ts";
 import {PostView} from "../components/PostView.tsx";
+import type {NewPost} from "@/types/post.ts";
+import NewPostForm from "@/components/NewPostForm.tsx";
 
 const trending = [
     {tag:"GTA6", posts:"67k posts"},
     {tag:"Bratwurst", posts:"12.2k posts"},
     {tag:"Tung Tung", posts:"6.5k posts"}
 ]
-function FeedPage({onDeletePost}) {
+
+function FeedPage({isPostFormOpen, setIsPostFormOpen}: {isPostFormOpen: boolean, setIsPostFormOpen: (isPostFormOpen: boolean) => void}) {
     const location = useLocation();
     const isExploreMode = location.pathname === "/explore";
 
@@ -20,6 +23,26 @@ function FeedPage({onDeletePost}) {
     const [filteredPosts, setFilteredPosts] = useState<Posts>();
     const [query, setQuery] = useState<string>("");
     const [users, setUsers] = useState<Users>()
+
+    const handleNewPost = async (post: NewPost) => {
+        const createdPost = await createPost(post);
+        console.log(createdPost);
+        if (posts) {
+            setPosts((current) => {
+                if (!current) return current;
+                return { ...current, posts: [createdPost, ...current.posts] };
+            });        }
+    };
+    const handleDeletePost = async (id: number) => {
+        const deletedPost = await deletePost(id);
+        console.log(deletedPost);
+        const filteredPosts = posts && posts.posts.filter((post) => post.id !== id);
+
+        if (filteredPosts) {
+            const newPosts: Posts = {posts: filteredPosts, total: posts.total, skip: posts.skip, limit: posts.limit}
+            setPosts(newPosts);
+        }
+    }
 
     useEffect(() => {
         getAllUsers().then(res => setUsers(res));
@@ -48,7 +71,14 @@ function FeedPage({onDeletePost}) {
 
     if (!isExploreMode && posts && users) {
         return (
-            <div className="flex w-1/2">{selectedPost ? <PostView selectedPost={selectedPost} onDeletePost={onDeletePost} setSelectedPost={setSelectedPost}/> : <Feed posts={posts} users={users} setSelectedPost={setSelectedPost}/>}</div>
+            <>
+                <div className="flex w-1/2">{selectedPost ? <PostView selectedPost={selectedPost} setSelectedPost={setSelectedPost}/> : <Feed posts={posts} users={users} setSelectedPost={setSelectedPost} onDeletePost={handleDeletePost}/>}</div>
+                <div className="w-1/4"/>
+                {isPostFormOpen && (
+                    <NewPostForm onClose={() => setIsPostFormOpen(false)}
+                                 onSubmit={handleNewPost}/>
+                )}
+            </>
         )
     }
 
@@ -84,8 +114,14 @@ function FeedPage({onDeletePost}) {
                     <p className="text-gray-500 mb-2">
                         {posts?.total} results for "{query}"
                     </p>
-                    {selectedPost ? <PostView selectedPost={selectedPost} setSelectedPost={setSelectedPost}/> : <Feed posts={filteredPosts} users={users} setSelectedPost={setSelectedPost} onDeletePost={onDeletePost} />}
+                    {selectedPost ? <PostView selectedPost={selectedPost} setSelectedPost={setSelectedPost}/> : <Feed posts={filteredPosts} users={users} setSelectedPost={setSelectedPost} onDeletePost={handleDeletePost} />}
                 </div>
+            )}
+
+            <div className="w-1/4"/>
+            {isPostFormOpen && (
+                <NewPostForm onClose={() => setIsPostFormOpen(false)}
+                             onSubmit={handleNewPost}/>
             )}
         </div>
     );

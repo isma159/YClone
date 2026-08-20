@@ -23,7 +23,7 @@ export interface ExtendedPost {
     user: PostUser | undefined
 }
 
-interface Reactions {
+export interface Reactions {
     likes: number
 }
 
@@ -63,7 +63,7 @@ export interface Users {
 }
 
 export interface NewPost {
-    title: string;
     body: string;
     userId: number;
+    reactions: Reactions,
 }

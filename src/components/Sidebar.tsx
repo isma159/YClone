@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import YLogoWhiteResized from "../Assets/YLogoWhiteResized.png"
+import YLogoWhiteResized from "@/Assets/YLogoWhiteResized.png"
 import {Home, Icon, Search} from "lucide-react";
 
 

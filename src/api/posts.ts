@@ -14,10 +14,14 @@ export function getAllUsers(): Promise<Users> {
 
 }
 
-export function getAllCommentsFromPost(id: number): Promise<Comments> {
+export async function getAllCommentsFromPost(id: number): Promise<Comments> {
 
-    const response = fetch(`https://dummyjson.com/comments/post/${id}`);
-    return response.then(res => res.json());
+    const emptyComments: Comments = {comments: [], total: 0, skip: 0, limit: 0}
+
+    const response = await fetch(`https://dummyjson.com/comments/post/${id}`);
+    if (!response.ok) return emptyComments;
+
+    return await response.json() as Comments;
 
 }
 
