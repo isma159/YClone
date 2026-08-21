@@ -47,7 +47,6 @@ export function Post({post, user, setSelectedPost, onDeletePost}: {post: Post, u
                     </div>
                     <div className="group flex justify-center items-center w-15 h-full gap-2">
                         <button className="flex justify-center items-center group-hover:text-white hover:scale-110 transition-all"><MessageCircle/></button>
-                        <p className="group-hover:text-white transition-colors">0</p>
                     </div>
                 </div>
             </div>
